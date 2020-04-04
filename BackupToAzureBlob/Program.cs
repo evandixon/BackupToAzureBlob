@@ -72,7 +72,7 @@ namespace BackupToAzureBlob
             foreach (var file in files)
             {
                 bool upload;
-                var blobName = blobDirectory + Path.GetRelativePath(sourceDirectory, file).Replace(@"\", "/");
+                var blobName = CleanBlobName(blobDirectory + Path.GetRelativePath(sourceDirectory, file).Replace(@"\", "/"));
                 if (config.VerboseLogging) Console.Write("Checking " + blobName + ". ");
                 if (blobsByName.TryGetValue(blobName, out var blob))
                 {
@@ -122,6 +122,13 @@ namespace BackupToAzureBlob
 
                 if (config.VerboseLogging) Console.WriteLine();
             }
+        }
+
+        private static string CleanBlobName(string name)
+        {
+            return name
+                .Replace("#", "_") // # character is not escaped by the official API, and any character afterward (including the #) will be ignored
+                ;
         }
     }
 
